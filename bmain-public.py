@@ -4,13 +4,20 @@ import praw
 import time
 import random
 import requests
+from bs4 import BeautifulSoup
+import json
+import os
+
+#Zachary Keffaber, 5/31/2021, BananaBot
 
 reddit = praw.Reddit(client_id='redditclientid', client_secret='clientsecret', user_agent='BannanaBot7829103')
 
 client = commands.Bot(command_prefix="$b ")
+os.chdir(r'/Users/zachary7829/BannanaBot/xp')
 
 @client.event
 async def on_ready():
+ await client.change_presence(status=discord.Status.idle, activity=discord.Game('$b info for info'))
  print("Bot is ready")
 
 @client.command()
@@ -25,6 +32,9 @@ async def greentext(ctx):
   if i == random_post_number:
    await ctx.send(post.url)
 
+@client.command()
+async def secretmegumintestcommand(ctx):
+ await ctx.send("https://hg1.funnyjunk.com/large/pictures/04/a5/04a5ea_6343222.jpg")
 
 @client.command()
 async def kick(ctx, member : discord.Member, *, reason=None):
@@ -34,7 +44,36 @@ async def kick(ctx, member : discord.Member, *, reason=None):
 @client.command()
 async def ban(ctx, member : discord.Member, *, reason=None):
  await member.ban(reason=reason)
- await ctx.send(f"{member} has been banned!")
+ await ctx.send(f"{member.mention} has been banned!")
+ 
+@client.command(name="meme")
+async def meme(ctx):
+ posts = reddit.subreddit('memes').hot(limit=50)
+ random_post_number = random.randint(0,49)
+ for i,post in enumerate(posts):
+  if i == random_post_number:
+   await ctx.send(post.url)
 
+@client.command()
+async def waifu(ctx):
+ waifu_id = "https://github.com/zachary7829/BananaBot/raw/main/waifu/" + str(random.randint(1,11)) + ".jpg"
+ await ctx.send(waifu_id)
+
+@client.command()
+async def unban(ctx, user: discord.User):
+ guild = ctx.guild
+ if ctx.author.guild_permissions.ban_members:
+  await ctx.send(f"{user} has been successfully unbanned.")
+  await guild.unban(user=user)
+   
+@client.command()
+async def apphookup(ctx):
+ posts = reddit.subreddit('apphookup').hot(limit=1)
+ for i,post in enumerate(posts):
+  await ctx.send("The latest deal I could find is: " + post.url)
+
+@client.command()
+async def info(ctx):
+ await ctx.send('**Commands:**\n\n$b kick {member} - kicks member\n$b ban {member} - bans member\n$b unban {memberid} - unbans member\n$b waifu - sends a pic of a waifu\n$b meme - sends a meme\n$b greentext - sends a 4chan post\n$b apphookup - sends a deal on apps/games\n$b hello - say hello to the bot\n\n\n**Source Code: **https://github.com/zachary7829/BananaBot')
 
 client.run()
